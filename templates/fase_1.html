@@ -1,0 +1,442 @@
+{% extends "base.html" %}
+
+{% block title %}Fase 1: Negócio{% endblock %}
+{% block active_fase1 %}active{% endblock %}
+
+{% block content %}
+<div class="panel business-report-panel">
+    <h2>Fase 1: Considerando o Negócio</h2>
+    <p class="panel-subtitle">Insira os dados do projeto e preencha os campos para a geração do Relatório de Negócio.</p>
+    
+    <form id="business-report-form">
+        <input type="hidden" id="current-project-id" name="project_id" value="">
+        <input type="hidden" name="tipo_relatorio" value="fase1">
+
+        <div class="project-info-panel">
+            <div class="form-group">
+                <label for="project-name-input">Nome do Projeto:</label>
+                <input type="text" id="project-name-input" placeholder="Ex: Monitoramento de Vacinas" required>
+            </div>
+            <div class="form-group">
+                <label for="responsible-input">Responsável pela Criação:</label>
+                <input type="text" id="responsible-input" placeholder="Ex: João da Silva" required>
+            </div>
+        </div>
+        
+        <hr style="border: 0; border-top: 1px dashed #ccc; margin-bottom: 2rem;">
+
+        <p class="panel-tip">
+            Dica: Você pode formatar o texto para o relatório.<br>
+            Por exemplo: <code>## Título</code> cria um subtítulo e <code>- Item</code> cria uma lista.
+        </p>
+
+        <div class="business-grid">
+            
+            <div class="form-group form-group-context">
+                <label for="context-input">Contextualização:</label>
+                <textarea id="context-input" rows="3" placeholder="Descreva o cenário atual, ambiente e contexto onde a solução será inserida..."></textarea>
+            </div>
+
+            <div class="form-group form-group-business">
+                <label for="business-input">
+                    Negócio (Business):
+                    <span class="help-trigger" data-modal="modal-negocio">?</span>
+                </label>
+                <textarea id="business-input" rows="5" placeholder="Qual é a área de atuação, atividade principal, ou problema de negócio central?"></textarea>
+            </div>
+            
+            <div class="arrow-box arrow-box-up">&darr;</div>
+
+            <div class="form-group form-group-rules"> 
+                <label for="rules-input">
+                    Regras de Negócio (Business Rules):
+                    <span class="help-trigger" data-modal="modal-regras">?</span>
+                </label>
+                <textarea id="rules-input" rows="7" placeholder="Quais são as premissas e restrições que se aplicam à operação?"></textarea>
+            </div>
+            
+            <div class="arrow-box arrow-box-r1">&rarr;</div>
+            <div class="static-iot-solution-box"> <h4>Solução IoT</h4></div>
+
+            <div class="form-group form-group-specialist"> 
+                <label for="specialist-input">
+                    Especialista (Specialist):
+                    <span class="help-trigger" data-modal="modal-especialista">?</span>
+                </label>
+                <textarea id="specialist-input" rows="7" placeholder="Quem são os especialistas envolvidos? Quais informações eles fornecem?"></textarea>
+            </div>
+            
+            <div class="arrow-box arrow-box-r2">&rarr;</div>
+            <div class="arrow-box arrow-box-down">&uarr;</div>
+
+            <div class="form-group form-group-things">
+                <label for="things-input">
+                    Coisas (Things):
+                    <span class="help-trigger" data-modal="modal-coisas">?</span>
+                </label>
+                <textarea id="things-input" rows="5" placeholder="Quais são os objetos ou entidades do mundo real a serem medidos ou controlados?"></textarea>
+            </div>
+        </div>
+
+        <div class="upload-section">
+            <div class="upload-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                Anexos do Relatório
+            </div>
+            <div id="drop-zone" class="drop-zone">
+                <p class="drop-zone-text">
+                    <strong>Clique aqui</strong> ou arraste arquivos para anexar.<br>
+                    <span style="font-size: 0.9em; opacity: 0.7;">(Suporta: PDF, JPG, PNG)</span>
+                </p>
+                <input type="file" id="file-input" multiple hidden accept=".pdf, .jpg, .jpeg, .png">
+            </div>
+            <div id="file-list" class="file-list"></div>
+        </div>
+        
+        <div class="actions-wrapper" style="display: flex; gap: 15px; margin-top: 15px;">
+            <button type="button" id="save-project-btn" class="btn btn-success" style="flex: 1;">Salvar Projeto</button>
+            <button type="submit" id="generate-report-btn" class="btn btn-primary" style="flex: 1;">Gerar Relatório de Negócio</button>
+        </div>
+    </form>
+</div>
+
+<div id="modal-negocio" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Ajuda: Negócio (Business)</h3>
+        <p>O "Negócio" é o domínio de aplicação da solução IoT. Ele define a área de atuação da empresa, sua atividade principal ou o problema central que a solução deve resolver. O objetivo é entender as "dores", ansiedades e expectativas do cliente.</p>
+        <h4>Perguntas-chave para guiar o preenchimento:</h4>
+        <ul>
+            <li>Qual é a área de atuação principal da empresa?</li>
+            <li>Qual é o problema central que o cliente está enfrentando? (A "dor")</li>
+            <li>Qual é o motivo pelo qual esta solução precisa ser criada?</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Fábrica de sorvetes com problema de produto derretido e perda de qualidade no ponto de venda final."</div>
+    </div>
+</div>
+
+<div id="modal-especialista" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Ajuda: Especialista (Specialist)</h3>
+        <p>É o profissional (ou time) com conhecimento especializado no negócio, cuja função é fornecer informações para apoiar a tomada de decisão. Ele não é necessariamente o profissional de TI, mas sim quem entende do processo.</p>
+        <h4>Perguntas-chave para guiar o preenchimento:</h4>
+        <ul>
+            <li>Quem na empresa entende *como* o processo funciona hoje?</li>
+            <li>Quem sabe quais são os parâmetros técnicos ideais (ex: limites de temperatura, vibração)?</li>
+            <li>Quem será consultado para validar se os dados coletados fazem sentido?</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Engenheiro de alimentos (sabe a temperatura de cristalização do sorvete) e o Gerente de Logística."</div>
+    </div>
+</div>
+
+<div id="modal-regras" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Ajuda: Regras de Negócio (Business Rules)</h3>
+        <p>São as premissas, restrições e suposições que se aplicam à operação do negócio e que devem ser levadas em conta no desenvolvimento da solução. Podem ser legais, financeiras ou temporais.</p>
+        <h4>Perguntas-chave para guiar o preenchimento:</h4>
+        <ul>
+            <li>Quais restrições (legais, operacionais, técnicas) existem?</li>
+            <li>Existem normas a seguir (ANVISA, LGPD, ISO)?</li>
+            <li>Qual é o orçamento ou retorno financeiro esperado?</li>
+            <li>Existem sistemas legados que devem ser integrados?</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"O produto não pode ficar acima de -18°C por mais de 20 minutos (Norma ANVISA). A solução deve se pagar em 6 meses."</div>
+    </div>
+</div>
+
+<div id="modal-coisas" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Ajuda: Coisas (Things)</h3>
+        <p>São os objetos de interesse do negócio; as entidades físicas ou virtuais que serão quantificadas, medidas ou controladas. Isso inclui os sensores, atuadores e os próprios objetos monitorados.</p>
+        <h4>Perguntas-chave para guiar o preenchimento:</h4>
+        <ul>
+            <li>O que, no mundo real, queremos "observar" ou "controlar"?</li>
+            <li>Quais grandezas físicas (temperatura, umidade, localização, vibração) precisam ser medidas?</li>
+            <li>Quais equipamentos serão instalados em campo?</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Caminhões de entrega, Paletes de Sorvete, Sensores de Temperatura DHT22, Módulos GPS."</div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // --- LÓGICA DA FASE 1 (COMPLETA) ---
+    
+    // Variáveis de Elementos
+    const currentProjectIdInput = document.getElementById('current-project-id');
+    const saveProjectBtn = document.getElementById('save-project-btn');
+    
+    const fields = {
+        name: document.getElementById('project-name-input'),
+        responsible: document.getElementById('responsible-input'),
+        context: document.getElementById('context-input'),
+        business: document.getElementById('business-input'),
+        rules: document.getElementById('rules-input'),
+        specialist: document.getElementById('specialist-input'),
+        things: document.getElementById('things-input')
+    };
+
+    // --- GERENCIADOR DE ARQUIVOS (Upload) ---
+    let arquivosSelecionados = []; 
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const fileListContainer = document.getElementById('file-list');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            adicionarArquivos(e.target.files);
+            fileInput.value = ''; 
+        }
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault(); 
+        dropZone.classList.add('dragover');
+    });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) {
+            adicionarArquivos(e.dataTransfer.files);
+        }
+    });
+
+    function adicionarArquivos(files) {
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            // Validação de extensão
+            if (!['pdf', 'jpg', 'jpeg', 'png'].includes(file.name.split('.').pop().toLowerCase())) {
+                alert("Formato inválido (apenas PDF, JPG, PNG).");
+                continue;
+            }
+            arquivosSelecionados.push(file);
+        }
+        atualizarListaVisual();
+    }
+
+    function atualizarListaVisual() {
+        fileListContainer.innerHTML = ''; 
+        arquivosSelecionados.forEach((file, index) => {
+            const card = document.createElement('div');
+            card.className = 'file-card';
+            
+            const isPdf = file.name.toLowerCase().endsWith('.pdf') || (file.type && file.type.includes('pdf'));
+            
+            let iconSvg = isPdf ? 
+                '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>' : 
+                '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+
+            const size = file.size ? (file.size / 1024).toFixed(1) + ' KB' : '';
+            const savedBadge = file.isStored ? '<span style="font-size:0.7em; background:#2ecc71; color:white; padding:2px 5px; border-radius:4px; margin-left:5px;">Salvo</span>' : '';
+
+            card.innerHTML = `
+                <div class="file-icon">${iconSvg}</div>
+                <div class="file-info">
+                    <span class="file-name">${file.name} ${savedBadge}</span>
+                    <span class="file-size">${size}</span>
+                </div>
+                <button type="button" class="file-remove-btn" title="Remover anexo">
+                    &times; 
+                </button>
+            `;
+            const removeBtn = card.querySelector('.file-remove-btn');
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                removerArquivo(index);
+            });
+            fileListContainer.appendChild(card);
+        });
+    }
+
+    function removerArquivo(index) {
+        const file = arquivosSelecionados[index];
+        if (file.isStored && file.id) {
+            if(!confirm("Deseja remover permanentemente este anexo salvo?")) return;
+            fetch(`/api/attachments/${file.id}`, { method: 'DELETE' })
+                .then(res => {
+                    if(!res.ok) throw new Error("Erro ao remover");
+                    arquivosSelecionados.splice(index, 1);
+                    atualizarListaVisual();
+                })
+                .catch(err => alert("Erro: " + err));
+        } else {
+            arquivosSelecionados.splice(index, 1);
+            atualizarListaVisual();
+        }
+    }
+
+    // --- FUNÇÕES DE INTEGRAÇÃO COM BASE.HTML ---
+
+    window.carregarProjetoNaTela = function(id) {
+        fetch(`/api/projects/${id}`)
+            .then(response => {
+                if(!response.ok) throw new Error("Erro ao buscar projeto");
+                return response.json();
+            })
+            .then(data => {
+                currentProjectIdInput.value = data.id;
+                fields.name.value = data.name || '';
+                fields.responsible.value = data.responsible || '';
+                fields.context.value = data.context || ''; 
+                fields.business.value = data.business_desc || '';
+                fields.rules.value = data.business_rules || '';
+                fields.specialist.value = data.specialist_desc || '';
+                fields.things.value = data.things_desc || '';
+                
+                arquivosSelecionados = [];
+                if (data.attachments && data.attachments.length > 0) {
+                    data.attachments.forEach(att => {
+                        arquivosSelecionados.push({
+                            id: att.id,
+                            name: att.filename,
+                            size: att.size,
+                            type: att.filetype,
+                            isStored: true 
+                        });
+                    });
+                }
+                atualizarListaVisual();
+                console.log(`Projeto ${data.name} carregado na Fase 1.`);
+            })
+            .catch(err => {
+                console.error(err);
+                sessionStorage.removeItem('smart_tpm_active_project');
+            });
+    };
+
+    window.limparCamposTela = function() {
+        currentProjectIdInput.value = ''; 
+        Object.values(fields).forEach(input => input.value = '');
+        arquivosSelecionados = [];
+        atualizarListaVisual();
+    };
+
+    // --- AÇÃO SALVAR PROJETO ---
+    saveProjectBtn.addEventListener('click', () => {
+        const projectName = fields.name.value.trim();
+        if (!projectName) {
+            alert("Por favor, preencha o Nome do Projeto.");
+            fields.name.focus();
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('project_id', currentProjectIdInput.value || '');
+        formData.append('name', fields.name.value);
+        formData.append('responsible', fields.responsible.value);
+        formData.append('context', fields.context.value); 
+        formData.append('business_desc', fields.business.value);
+        formData.append('business_rules', fields.rules.value);
+        formData.append('specialist_desc', fields.specialist.value);
+        formData.append('things_desc', fields.things.value);
+
+        arquivosSelecionados.forEach(file => {
+            if (file instanceof File) {
+                formData.append('anexos', file);
+            }
+        });
+
+        const originalText = saveProjectBtn.innerText;
+        saveProjectBtn.innerText = "Salvando...";
+        saveProjectBtn.disabled = true;
+
+        fetch('/api/save_project', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Erro na resposta");
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message || "Salvo com sucesso!");
+            if (data.project_id) {
+                currentProjectIdInput.value = data.project_id;
+                sessionStorage.setItem('smart_tpm_active_project', data.project_id);
+                window.carregarProjetoNaTela(data.project_id);
+                if(window.carregarListaProjetos) window.carregarListaProjetos();
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Erro ao salvar: " + err);
+        })
+        .finally(() => {
+            saveProjectBtn.innerText = originalText;
+            saveProjectBtn.disabled = false;
+        });
+    });
+
+    // --- GERAÇÃO DE PDF ---
+    const businessReportForm = document.getElementById("business-report-form");
+    businessReportForm.addEventListener("submit", async (event) => {
+        event.preventDefault(); 
+        
+        const formData = new FormData();
+        formData.append('tipo_relatorio', 'fase1');
+        formData.append('project_id', currentProjectIdInput.value || '');
+        formData.append('nome_projeto', document.getElementById('project-name-input').value);
+        formData.append('responsavel', document.getElementById('responsible-input').value);
+        formData.append('contexto', document.getElementById('context-input').value);
+        formData.append('negocio', document.getElementById('business-input').value);
+        formData.append('regras', document.getElementById('rules-input').value);
+        formData.append('especialista', document.getElementById('specialist-input').value);
+        formData.append('coisas', document.getElementById('things-input').value);
+        
+        arquivosSelecionados.forEach(file => {
+            if (file instanceof File) {
+                formData.append('anexos', file);
+            }
+        });
+
+        const btn = document.getElementById('generate-report-btn');
+        const originalText = btn.innerText;
+        btn.innerText = "Processando...";
+        btn.disabled = true;
+
+        try {
+            const response = await fetch("/api/gerar_relatorio", {
+                method: "POST",
+                body: formData, 
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(`Erro: ${errData.error || response.statusText}`);
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'Relatorio_Negocio_TpM.pdf'; 
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+            
+        } catch (error) {
+            console.error("Erro:", error);
+            alert("Erro ao gerar relatório: " + error.message);
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    });
+
+    console.log("Fase 1: Scripts Carregados e Funcionais.");
+</script>
+{% endblock %}

@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+
+{% block title %}Fase 2: Requisitos{% endblock %}
+{% block active_fase2 %}active{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <h2>Fase 2: Levantamento de Requisitos</h2>
+    
+    <div id="project-header" style="margin-bottom: 20px; font-weight: bold; color: #3498db; display: none;">
+        Projeto Ativo: <span id="project-name-display" style="color: #2c3e50;"></span>
+    </div>
+
+    <p class="panel-subtitle">
+        Nesta fase, definimos os requisitos funcionais e não funcionais seguindo o modelo IoT-OSRM. 
+        A abordagem é <strong>Top-Down</strong> (do usuário para a coisa), conforme definido na seção 3.3 do artigo.
+    </p>
+
+    <form id="requirements-form">
+        <input type="hidden" id="current-project-id" name="project_id" value="">
+        <input type="hidden" id="hidden-responsible" name="responsavel" value="">
+        
+        <div class="levels-grid">
+            <div class="level-container">
+                
+                <div class="form-group level-6">
+                    <label>Nível 6 - Display (Visualização):
+                        <span class="help-trigger" data-modal="modal-l6">?</span>
+                    </label>
+                    <textarea id="l6" name="l6" rows="4" placeholder="Como a informação deve ser apresentada ao usuário final? (Gráficos, tabelas, alertas de emergência...)"></textarea>
+                </div>
+
+                <div class="form-group level-5">
+                    <label>Nível 5 - Abstraction (Abstração):
+                        <span class="help-trigger" data-modal="modal-l5">?</span>
+                    </label>
+                    <textarea id="l5" name="l5" rows="4" placeholder="Como os dados brutos serão transformados em informação útil? (Regras, IA, Processamento...)"></textarea>
+                </div>
+
+                <div class="form-group level-4">
+                    <label>Nível 4 - Storage (Armazenamento):
+                        <span class="help-trigger" data-modal="modal-l4">?</span>
+                    </label>
+                    <textarea id="l4" name="l4" rows="4" placeholder="Onde e como os dados serão armazenados? (Nuvem, Local, Tempo de retenção...)"></textarea>
+                </div>
+
+                <div class="form-group level-3">
+                    <label>Nível 3 - Border (Borda):
+                        <span class="help-trigger" data-modal="modal-l3">?</span>
+                    </label>
+                    <textarea id="l3" name="l3" rows="4" placeholder="Como conectar as 'coisas' à internet? (Gateway, Middleware, Roteadores...)"></textarea>
+                </div>
+
+                <div class="form-group level-2">
+                    <label>Nível 2 - Connectivity (Conectividade):
+                        <span class="help-trigger" data-modal="modal-l2">?</span>
+                    </label>
+                    <textarea id="l2" name="l2" rows="4" placeholder="Qual tecnologia conectará os sensores à borda? (Com fio, Sem fio, Alcance, Custo...)"></textarea>
+                </div>
+
+                <div class="form-group level-1">
+                    <label>Nível 1 - Sensor/Actuator (Sensores/Atuadores):
+                        <span class="help-trigger" data-modal="modal-l1">?</span>
+                    </label>
+                    <textarea id="l1" name="l1" rows="4" placeholder="O que deve ser medido ou controlado? (Precisão, Grandezas físicas, Frequência...)"></textarea>
+                </div>
+
+            </div>
+
+            <div class="big-arrow-container">
+                &darr;
+            </div>
+        </div>
+
+        <div class="actions-wrapper" style="display: flex; gap: 15px; margin-top: 20px;">
+            <button type="button" id="save-phase2-btn" class="btn btn-success" style="flex: 1;">
+                Salvar Projeto
+            </button>
+            <button type="submit" id="generate-report-btn" class="btn btn-primary" style="flex: 1;">
+                Gerar Relatório de Requisitos
+            </button>
+        </div>
+    </form>
+</div>
+
+<div id="modal-l6" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Nível 6: Display (Visualização)</h3>
+        <p>Define como a informação processada será entregue e visualizada pelo usuário final. É o ponto de contato humano com a solução [cite: 449-451].</p>
+        <h4>Pontos de definição:</h4>
+        <ul>
+            <li><strong>Formato:</strong> A informação será apresentada em tabelas, gráficos, números crus ou indicadores visuais?</li>
+            <li><strong>Alertas:</strong> Como lidar com emergências? (SMS, e-mail, sirene visual).</li>
+            <li><strong>Plataforma:</strong> Será via aplicativo móvel, painel web ou display local (IHM)?</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Dashboard Web com gráfico de temperatura em tempo real e envio de SMS vermelho caso ultrapasse 50°C."</div>
+    </div>
+</div>
+
+<div id="modal-l5" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Nível 5: Abstraction (Abstração)</h3>
+        <p>Neste nível, os dados armazenados são convertidos em informação de valor. É onde o conhecimento do <strong>Especialista</strong> (Fase 1) é aplicado [cite: 452-455].</p>
+        <h4>Pontos de definição:</h4>
+        <ul>
+            <li><strong>Regras de processamento:</strong> Como converter dados brutos (bits/voltagem) em grandezas físicas (graus Celsius)?</li>
+            <li><strong>Inteligência:</strong> É necessário usar Inteligência Artificial, Machine Learning ou Data Mining para encontrar padrões?</li>
+            <li><strong>Lógica de Negócio:</strong> Como saber se um valor é "bom" ou "ruim" para o negócio?</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Algoritmo que analisa a vibração do motor e prediz falha iminente baseada no histórico de manutenções (Machine Learning)."</div>
+    </div>
+</div>
+
+<div id="modal-l4" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Nível 4: Storage (Armazenamento)</h3>
+        <p>Define as políticas e tecnologias para guardar os dados coletados [cite: 456-458].</p>
+        <h4>Pontos de definição:</h4>
+        <ul>
+            <li><strong>Localização:</strong> Os dados ficam na Nuvem (Cloud), localmente (on-premise) ou ambos (híbrido)?</li>
+            <li><strong>Segurança e Retenção:</strong> Por quanto tempo os dados devem ser guardados? Qual o nível de redundância necessário?</li>
+            <li><strong>Volume:</strong> Qual a estimativa de volume de dados gerado por dia?</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Armazenamento local temporário de 24h e sincronização diária com a nuvem AWS para histórico de 5 anos."</div>
+    </div>
+</div>
+
+<div id="modal-l3" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Nível 3: Border (Borda)</h3>
+        <p>Define o elemento que conecta a solução IoT (coisas) à Internet. Este elemento é obrigatório em qualquer sistema IoT [cite: 459-463].</p>
+        <h4>Pontos de definição:</h4>
+        <ul>
+            <li><strong>Equipamento de Borda:</strong> Será um Gateway simples, um Roteador 4G ou um computador industrial?</li>
+            <li><strong>Funções Avançadas:</strong> O gateway fará pré-processamento (Fog Computing) ou apenas repasse de pacotes?</li>
+            <li><strong>Interoperabilidade:</strong> Ele precisa traduzir protocolos (ex: Zigbee para WiFi)?</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Gateway Industrial Raspberry Pi que recebe dados via LoRa e envia para a internet via 4G/LTE."</div>
+    </div>
+</div>
+
+<div id="modal-l2" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Nível 2: Connectivity (Conectividade)</h3>
+        <p>Foca na conexão entre as "Coisas" (Nível 1) e a Borda (Nível 3). Frequentemente considerado o gargalo do sistema [cite: 464-467].</p>
+        <h4>Pontos de definição:</h4>
+        <ul>
+            <li><strong>Meio Físico:</strong> Cabeado (Ethernet, Serial) ou Sem Fio (Wireless)?</li>
+            <li><strong>Tecnologia Wireless:</strong> Se for sem fio, qual o alcance necessário? (Curto: Bluetooth/Zigbee; Longo: LoRa/Sigfox/Satélite).</li>
+            <li><strong>Restrições:</strong> Custos, consumo de energia e quantidade de itens a monitorar.</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Rede Mesh sem fio (Zigbee) para cobrir o chão de fábrica sem necessidade de cabos novos."</div>
+    </div>
+</div>
+
+<div id="modal-l1" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Nível 1: Sensor/Actuator (Sensores)</h3>
+        <p>Refere-se aos dispositivos responsáveis pela coleta de dados ou ação física no ambiente [cite: 497-499].</p>
+        <h4>Pontos de definição:</h4>
+        <ul>
+            <li><strong>Capacidades:</strong> O que exatamente será medido? Qual a precisão e frequência de amostragem necessárias?</li>
+            <li><strong>Processamento Local:</strong> O sensor precisa ser inteligente (Edge Computing) ou apenas enviar dados crus?</li>
+            <li><strong>Energia:</strong> Será alimentado por bateria, energia solar ou rede elétrica?</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Sensor de vibração piezoelétrico triaxial com frequência de 10Hz e bateria com duração de 2 anos."</div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const projectIdInput = document.getElementById('current-project-id');
+    const hiddenResponsible = document.getElementById('hidden-responsible'); // Campo Responsável
+    const fields = {
+        l6: document.getElementById('l6'),
+        l5: document.getElementById('l5'),
+        l4: document.getElementById('l4'),
+        l3: document.getElementById('l3'),
+        l2: document.getElementById('l2'),
+        l1: document.getElementById('l1')
+    };
+
+    window.carregarProjetoNaTela = function(id) {
+        fetch(`/api/projects/${id}`).then(r => r.json()).then(data => {
+            projectIdInput.value = data.id;
+            document.getElementById('project-name-display').innerText = data.name;
+            document.getElementById('project-header').style.display = 'block';
+            
+            // Coleta Responsável para enviar no relatório
+            hiddenResponsible.value = data.responsible || 'Não informado';
+
+            // Preenche campos
+            fields.l6.value = data.req_l6 || '';
+            fields.l5.value = data.req_l5 || '';
+            fields.l4.value = data.req_l4 || '';
+            fields.l3.value = data.req_l3 || '';
+            fields.l2.value = data.req_l2 || '';
+            fields.l1.value = data.req_l1 || '';
+            console.log(`Fase 2: Projeto ${data.name} carregado.`);
+        });
+    };
+    
+    window.limparCamposTela = function() {
+        document.getElementById('project-header').style.display = 'none';
+        document.getElementById('requirements-form').reset();
+        projectIdInput.value = '';
+        hiddenResponsible.value = '';
+    };
+
+    // Botão Salvar
+    document.getElementById('save-phase2-btn').addEventListener('click', () => {
+        if(!projectIdInput.value) { alert("Erro: Nenhum projeto selecionado. Volte à Fase 1."); return; }
+        
+        const btn = document.getElementById('save-phase2-btn');
+        const oldText = btn.innerText;
+        btn.innerText = "Salvando...";
+        btn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('project_id', projectIdInput.value);
+        formData.append('req_l6', fields.l6.value);
+        formData.append('req_l5', fields.l5.value);
+        formData.append('req_l4', fields.l4.value);
+        formData.append('req_l3', fields.l3.value);
+        formData.append('req_l2', fields.l2.value);
+        formData.append('req_l1', fields.l1.value);
+
+        fetch('/api/save_project', { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(data => alert(data.message))
+            .catch(err => alert("Erro ao salvar: " + err))
+            .finally(() => { btn.innerText = oldText; btn.disabled = false; });
+    });
+
+    // Gerar Relatório
+    document.getElementById('requirements-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if(!projectIdInput.value) { alert("Selecione um projeto."); return; }
+        
+        const btn = document.getElementById('generate-report-btn');
+        btn.innerText = "Gerando...";
+        btn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('tipo_relatorio', 'fase2'); // Define o tipo de PDF
+        formData.append('project_id', projectIdInput.value);
+        formData.append('nome_projeto', document.getElementById('project-name-display').innerText);
+        formData.append('responsavel', hiddenResponsible.value); // Envia responsável
+        formData.append('l6_display', fields.l6.value);
+        formData.append('l5_abstraction', fields.l5.value);
+        formData.append('l4_storage', fields.l4.value);
+        formData.append('l3_border', fields.l3.value);
+        formData.append('l2_connectivity', fields.l2.value);
+        formData.append('l1_sensor', fields.l1.value);
+
+        try {
+            const res = await fetch("/api/gerar_relatorio", { method: "POST", body: formData });
+            if(res.ok) {
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = 'Relatorio_Requisitos_TpM.pdf';
+                a.click();
+            } else { alert("Erro ao gerar PDF."); }
+        } catch(err) { alert(err); }
+        finally { btn.innerText = "Gerar Relatório de Requisitos"; btn.disabled = false; }
+    });
+</script>
+{% endblock %}

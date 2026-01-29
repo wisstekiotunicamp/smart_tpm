@@ -1,0 +1,13 @@
+flask
+flask_sqlalchemy
+flask_login
+werkzeug
+fpdf2
+markdown2
+beautifulsoup4
+pypdf
+Pillow
+pymysql
+cryptography
+gunicorn
+click

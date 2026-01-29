@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart TpM - {% block title %}Início{% endblock %}</title>
+    
+    <link rel="icon" href="{{ url_for('static', filename='img/logo_wisstek.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head_extras %}{% endblock %}
+</head>
+<body>
+
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <button id="new-project-btn" class="btn-new-project">
+                <span>+</span> Novo Projeto
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <h3 class="sidebar-title">Seus Projetos</h3>
+            <ul id="project-list" class="project-list">
+                </ul>
+        </div>
+    </div>
+
+    <div id="page-wrapper" class="page-wrapper">
+
+        <header class="site-header">
+            <div class="brand-wrapper">
+                <button id="sidebar-toggle" class="sidebar-toggle" title="Abrir Menu de Projetos">
+                    ☰
+                </button>
+                <img src="{{ url_for('static', filename='img/logo_wisstek.png') }}" alt="Logotipo Wisstek" class="logo">
+                <h1>Smart TpM</h1>
+            </div>
+
+            <div class="user-controls">
+                {% if user and user.is_authenticated %}
+                    <div class="user-info">
+                        <span class="welcome-text">Olá,</span>
+                        <span class="user-name profile-trigger" title="Clique para editar perfil">
+                            {{ user.username }}
+                        </span>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="btn-logout" title="Sair do sistema">Sair</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <main>
+            <div class="tabs-container">
+                <a href="/" class="tab-link {% block active_fase1 %}{% endblock %}">1ª Fase: Negócio</a>
+                <a href="/fase2" class="tab-link {% block active_fase2 %}{% endblock %}">2ª Fase: Requisitos</a>
+                <a href="/fase3" class="tab-link {% block active_fase3 %}{% endblock %}">3ª Fase: Implementação</a>
+            </div>
+
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="site-footer">
+            <p>&copy; 2025 Wisstek. Smart-TpM v0.6 - Metodologia TpM-Pro</p>
+        </footer>
+    </div>
+
+    <div id="modal-profile" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h3>Editar Perfil</h3>
+            <p style="margin-bottom: 15px; font-size: 0.9em; color: #666;">Altere seu e-mail ou redefina sua senha.</p>
+            <form id="profile-form">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="profile-email">E-mail:</label>
+                    <input type="email" id="profile-email" value="{{ user.email }}" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="profile-new-password">Nova Senha:</label>
+                    <input type="password" id="profile-new-password" placeholder="Digite a nova senha">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="profile-confirm-password">Confirmar Nova Senha:</label>
+                    <input type="password" id="profile-confirm-password" placeholder="Confirme a nova senha">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // --- VARIÁVEIS GLOBAIS DE UI ---
+            const body = document.body;
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const projectList = document.getElementById('project-list');
+            const newProjectBtn = document.getElementById('new-project-btn');
+
+            // --- PERSISTÊNCIA DE PROJETO ENTRE ABAS ---
+            // Verifica se há um projeto ativo na sessão ao carregar a página
+            const activeProjectId = sessionStorage.getItem('smart_tpm_active_project');
+            
+            // Se houver ID e a função de carregar existir na página atual, executa
+            if (activeProjectId && typeof window.carregarProjetoNaTela === 'function') {
+                console.log("Recarregando projeto ativo ID:", activeProjectId);
+                window.carregarProjetoNaTela(activeProjectId);
+            }
+
+            // --- SIDEBAR TOGGLE ---
+            sidebarToggle.addEventListener('click', (event) => {
+                event.stopPropagation();
+                body.classList.toggle('sidebar-open');
+                sidebar.classList.toggle('open');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (sidebar.classList.contains('open') && !sidebar.contains(event.target) && event.target !== sidebarToggle) {
+                    body.classList.remove('sidebar-open');
+                    sidebar.classList.remove('open');
+                }
+            });
+
+            // --- PERFIL MODAL ---
+            const profileTrigger = document.querySelector('.profile-trigger');
+            const profileModal = document.getElementById('modal-profile');
+            const profileForm = document.getElementById('profile-form');
+            
+            if(profileTrigger) {
+                profileTrigger.addEventListener('click', () => profileModal.style.display = 'block');
+            }
+
+            if (profileForm) {
+                profileForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('profile-email').value;
+                    const newPassword = document.getElementById('profile-new-password').value;
+                    const confirmPassword = document.getElementById('profile-confirm-password').value;
+
+                    if (newPassword || confirmPassword) {
+                        if (newPassword !== confirmPassword) {
+                            alert("As senhas digitadas não conferem.");
+                            return;
+                        }
+                    }
+                    const btn = profileForm.querySelector('button');
+                    const originalText = btn.innerText;
+                    btn.innerText = "Salvando...";
+                    btn.disabled = true;
+
+                    fetch('/api/update_profile', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ email: email, new_password: newPassword })
+                    })
+                    .then(response => {
+                        if (!response.ok) return response.json().then(err => { throw new Error(err.error || 'Erro desconhecido'); });
+                        return response.json();
+                    })
+                    .then(data => {
+                        alert(data.message);
+                        profileModal.style.display = 'none';
+                        document.getElementById('profile-new-password').value = '';
+                        document.getElementById('profile-confirm-password').value = '';
+                    })
+                    .catch(error => alert("Erro: " + error.message))
+                    .finally(() => { btn.innerText = originalText; btn.disabled = false; });
+                });
+            }
+
+            // --- GERENCIAMENTO GLOBAL DE PROJETOS (Listagem) ---
+            window.carregarListaProjetos = function() {
+                fetch('/api/projects')
+                    .then(response => response.json())
+                    .then(data => {
+                        projectList.innerHTML = '';
+                        if (data.length === 0) {
+                            projectList.innerHTML = '<li class="no-projects">Nenhum projeto salvo.</li>';
+                            return;
+                        }
+                        data.forEach(proj => {
+                            const li = document.createElement('li');
+                            li.className = 'project-item';
+                            // Marca visualmente se é o projeto ativo
+                            if (activeProjectId && proj.id == activeProjectId) {
+                                li.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+                            }
+                            
+                            li.innerHTML = `
+                                <div class="proj-info">
+                                    <div class="proj-name">${proj.name}</div>
+                                    <div class="proj-date">${proj.updated_at}</div>
+                                </div>
+                                <button class="btn-delete-project" title="Excluir Projeto">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            `;
+                            
+                            // Ação de Carregar Projeto
+                            li.addEventListener('click', () => {
+                                // Salva na sessão
+                                sessionStorage.setItem('smart_tpm_active_project', proj.id);
+                                
+                                // Chama função específica da página atual
+                                if (typeof window.carregarProjetoNaTela === 'function') {
+                                    window.carregarProjetoNaTela(proj.id);
+                                }
+                                
+                                // Recarrega lista para atualizar destaque visual
+                                window.carregarListaProjetos();
+                                
+                                body.classList.remove('sidebar-open');
+                                sidebar.classList.remove('open');
+                            });
+
+                            // Ação de Deletar Projeto
+                            const deleteBtn = li.querySelector('.btn-delete-project');
+                            deleteBtn.addEventListener('click', (e) => {
+                                e.stopPropagation(); 
+                                if (!confirm(`Tem certeza que deseja excluir o projeto "${proj.name}"?`)) return;
+                                fetch(`/api/projects/${proj.id}`, { method: 'DELETE' })
+                                    .then(res => res.json())
+                                    .then(() => {
+                                        // Se deletou o projeto ativo, limpa a sessão e a tela
+                                        if (sessionStorage.getItem('smart_tpm_active_project') == proj.id) {
+                                            sessionStorage.removeItem('smart_tpm_active_project');
+                                            if (typeof window.limparCamposTela === 'function') {
+                                                window.limparCamposTela();
+                                            }
+                                        }
+                                        window.carregarListaProjetos();
+                                    })
+                                    .catch(err => alert("Erro ao excluir: " + err));
+                            });
+
+                            projectList.appendChild(li);
+                        });
+                    })
+                    .catch(err => console.error("Erro ao listar projetos:", err));
+            }
+
+            // Inicializa lista
+            carregarListaProjetos();
+
+            // Botão Novo Projeto
+            newProjectBtn.addEventListener('click', () => {
+                sessionStorage.removeItem('smart_tpm_active_project'); // Limpa sessão
+                if (typeof window.limparCamposTela === 'function') {
+                    window.limparCamposTela();
+                }
+                window.carregarListaProjetos(); // Remove destaque
+                body.classList.remove('sidebar-open');
+                sidebar.classList.remove('open');
+            });
+
+            // --- TRIGGERS GLOBAIS DE MODAIS E FECHAMENTO ---
+            const modalCloseBtns = document.querySelectorAll('.modal-close');
+            modalCloseBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const modal = btn.closest('.modal-overlay');
+                    modal.style.display = 'none';
+                });
+            });
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none';
+            });
+            window.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                }
+            });
+            
+            // Triggers de Ajuda Genéricos
+            document.querySelectorAll('.help-trigger').forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const modalId = trigger.getAttribute('data-modal');
+                    const modal = document.getElementById(modalId);
+                    if (modal) modal.style.display = 'block';
+                });
+            });
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

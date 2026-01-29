@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}Fase 3: Implementação{% endblock %}
+{% block active_fase3 %}active{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <h2>Fase 3: Implementação</h2>
+    
+    <div id="project-header" style="margin-bottom: 20px; font-weight: bold; color: #3498db; display: none;">
+        Projeto Ativo: <span id="project-name-display" style="color: #2c3e50;"></span>
+    </div>
+
+    <p class="panel-subtitle">
+        Nesta fase, escolhemos as tecnologias reais e implementamos a solução. 
+        A abordagem é <strong>Bottom-Up</strong> (do hardware para o display), subindo os níveis conforme a seção 3.4 do artigo.
+    </p>
+
+    <form id="implementation-form">
+        <input type="hidden" id="current-project-id" name="project_id" value="">
+        <input type="hidden" id="hidden-responsible" name="responsavel" value="">
+        
+        <div class="levels-grid">
+            <div class="level-container">
+                
+                <div class="form-group level-1">
+                    <label>Nível 1 - Sensor/Actuator (Hardware):
+                        <span class="help-trigger" data-modal="modal-impl-l1">?</span>
+                    </label>
+                    <textarea id="impl_l1" name="impl_l1" rows="4" placeholder="Quais componentes eletrônicos específicos foram escolhidos? (MCU, Transdutores, Bateria...)"></textarea>
+                </div>
+
+                <div class="form-group level-2">
+                    <label>Nível 2 - Connectivity (Protocolos):
+                        <span class="help-trigger" data-modal="modal-impl-l2">?</span>
+                    </label>
+                    <textarea id="impl_l2" name="impl_l2" rows="4" placeholder="Quais módulos de comunicação e protocolos foram implementados? (MQTT, CoAP, LoRaWAN...)"></textarea>
+                </div>
+
+                <div class="form-group level-3">
+                    <label>Nível 3 - Border (Gateway/Edge):
+                        <span class="help-trigger" data-modal="modal-impl-l3">?</span>
+                    </label>
+                    <textarea id="impl_l3" name="impl_l3" rows="4" placeholder="Qual equipamento de borda foi instalado? (Raspberry Pi, ESP32 Gateway, Servidor Industrial...)"></textarea>
+                </div>
+
+                <div class="form-group level-4">
+                    <label>Nível 4 - Storage (Banco de Dados):
+                        <span class="help-trigger" data-modal="modal-impl-l4">?</span>
+                    </label>
+                    <textarea id="impl_l4" name="impl_l4" rows="4" placeholder="Qual tecnologia de banco de dados foi configurada? (MySQL, InfluxDB, MongoDB, Firebase...)"></textarea>
+                </div>
+
+                <div class="form-group level-5">
+                    <label>Nível 5 - Abstraction (Algoritmos):
+                        <span class="help-trigger" data-modal="modal-impl-l5">?</span>
+                    </label>
+                    <textarea id="impl_l5" name="impl_l5" rows="4" placeholder="Quais técnicas de análise foram codificadas? (Scripts Python, Machine Learning, Dashboards de BI...)"></textarea>
+                </div>
+
+                <div class="form-group level-6">
+                    <label>Nível 6 - Display (Frontend/App):
+                        <span class="help-trigger" data-modal="modal-impl-l6">?</span>
+                    </label>
+                    <textarea id="impl_l6" name="impl_l6" rows="4" placeholder="Qual interface foi entregue ao cliente? (App Android, Site React, Painel Grafana...)"></textarea>
+                </div>
+
+            </div>
+
+            <div class="big-arrow-container">
+                &uarr;
+            </div>
+        </div>
+
+        <div class="actions-wrapper" style="display: flex; gap: 15px; margin-top: 20px;">
+            <button type="button" id="save-phase3-btn" class="btn btn-success" style="flex: 1;">
+                Salvar Projeto
+            </button>
+            <button type="submit" id="generate-report-btn" class="btn btn-primary" style="flex: 1;">
+                Gerar Relatório de Implementação
+            </button>
+        </div>
+    </form>
+</div>
+
+<div id="modal-impl-l1" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Implementação Nível 1: Hardware</h3>
+        <p>Definição e aquisição dos componentes físicos do nó sensor/atuador [cite: 520-521].</p>
+        <h4>Decisões de Implementação:</h4>
+        <ul>
+            <li><strong>Microcontrolador (MCU):</strong> Escolha do "cérebro" (ex: Arduino, ESP32, STM32, PIC).</li>
+            <li><strong>Transdutores:</strong> Modelos específicos dos sensores (ex: Sensor de temperatura DS18B20, Acelerômetro ADXL345).</li>
+            <li><strong>Energia:</strong> Baterias, conversores DC-DC ou sistemas de Energy Harvesting.</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Uso de ESP32 como MCU principal e sensor DHT22. Alimentação via bateria 18650."</div>
+    </div>
+</div>
+
+<div id="modal-impl-l2" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Implementação Nível 2: Protocolos</h3>
+        <p>Configuração dos meios de transmissão e protocolos de comunicação[cite: 522].</p>
+        <h4>Decisões de Implementação:</h4>
+        <ul>
+            <li><strong>Hardware de RF:</strong> Transceptores e antenas (ex: Módulo LoRa SX1276, Antena 3dBi).</li>
+            <li><strong>Protocolos de Rede:</strong> Definição da pilha de comunicação (ex: MQTT sobre WiFi, CoAP, HTTP, LoRaWAN).</li>
+            <li><strong>Parâmetros:</strong> Configuração de Baud Rate, canais de frequência e chaves de segurança.</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Protocolo MQTT publicando no tópico /fabrica/sensor1 via WiFi na porta 1883."</div>
+    </div>
+</div>
+
+<div id="modal-impl-l3" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Implementação Nível 3: Edge/Gateway</h3>
+        <p>Instalação do elemento de borda que gerencia o tráfego local e internet [cite: 523-525].</p>
+        <h4>Decisões de Implementação:</h4>
+        <ul>
+            <li><strong>Equipamento:</strong> Single Board Computer (Raspberry Pi), Gateway industrial proprietário ou servidor local.</li>
+            <li><strong>Estratégia:</strong> Edge Computing (processar localmente) vs Inter Cloud Computing (enviar direto para nuvem).</li>
+            <li><strong>Software de Borda:</strong> Node-RED, Docker, Scripts Python de roteamento.</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Raspberry Pi 4 rodando container Docker com Mosquito Broker para concentrar mensagens MQTT."</div>
+    </div>
+</div>
+
+<div id="modal-impl-l4" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Implementação Nível 4: Database</h3>
+        <p>Instalação e configuração do sistema de banco de dados baseado nos requisitos [cite: 526-528].</p>
+        <h4>Decisões de Implementação:</h4>
+        <ul>
+            <li><strong>Tipo de Banco:</strong> Relacional (MySQL, PostgreSQL) ou Não-Relacional (MongoDB, InfluxDB).</li>
+            <li><strong>Hospedagem:</strong> Instância local, VPS ou serviço gerenciado (AWS RDS, Firebase).</li>
+            <li><strong>Schema:</strong> Definição das tabelas ou coleções JSON.</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Banco de dados temporal InfluxDB hospedado em instância EC2 na AWS."</div>
+    </div>
+</div>
+
+<div id="modal-impl-l5" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Implementação Nível 5: Lógica e IA</h3>
+        <p>Codificação das técnicas de manipulação de dados [cite: 529-530].</p>
+        <h4>Decisões de Implementação:</h4>
+        <ul>
+            <li><strong>Técnicas:</strong> Algoritmos estatísticos, Machine Learning, Deep Learning ou Big Data.</li>
+            <li><strong>Linguagem:</strong> Python (Pandas, Scikit-learn), R, Java.</li>
+            <li><strong>Objetivo:</strong> Gerar informação útil para o cliente a partir dos dados armazenados.</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"Script Python rodando a cada 10 min para calcular média móvel e detectar anomalias."</div>
+    </div>
+</div>
+
+<div id="modal-impl-l6" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>Implementação Nível 6: Interface</h3>
+        <p>Desenvolvimento das ferramentas que entregam o resultado ao cliente [cite: 531-532].</p>
+        <h4>Decisões de Implementação:</h4>
+        <ul>
+            <li><strong>Ferramentas:</strong> Aplicativos Mobile (Android/iOS), Web Apps, Dashboards (Grafana, PowerBI).</li>
+            <li><strong>Funcionalidades:</strong> Gráficos de histórico, botões de comando, lista de alertas.</li>
+            <li><strong>UX/UI:</strong> Design da interface focado na experiência do usuário.</li>
+        </ul>
+        <h4>Exemplo:</h4>
+        <div class="exemplo-texto">"App Android desenvolvido em Flutter consumindo API REST para mostrar status dos sensores."</div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const projectIdInput = document.getElementById('current-project-id');
+    const hiddenResponsible = document.getElementById('hidden-responsible');
+    const fields = {
+        l1: document.getElementById('impl_l1'),
+        l2: document.getElementById('impl_l2'),
+        l3: document.getElementById('impl_l3'),
+        l4: document.getElementById('impl_l4'),
+        l5: document.getElementById('impl_l5'),
+        l6: document.getElementById('impl_l6')
+    };
+
+    window.carregarProjetoNaTela = function(id) {
+        fetch(`/api/projects/${id}`).then(r => r.json()).then(data => {
+            projectIdInput.value = data.id;
+            document.getElementById('project-name-display').innerText = data.name;
+            document.getElementById('project-header').style.display = 'block';
+            hiddenResponsible.value = data.responsible || 'Não informado';
+            
+            // Preenche campos
+            fields.l1.value = data.impl_l1 || '';
+            fields.l2.value = data.impl_l2 || '';
+            fields.l3.value = data.impl_l3 || '';
+            fields.l4.value = data.impl_l4 || '';
+            fields.l5.value = data.impl_l5 || '';
+            fields.l6.value = data.impl_l6 || '';
+            console.log(`Fase 3: Projeto ${data.name} carregado.`);
+        });
+    };
+    
+    window.limparCamposTela = function() {
+        document.getElementById('project-header').style.display = 'none';
+        document.getElementById('implementation-form').reset();
+        projectIdInput.value = '';
+        hiddenResponsible.value = '';
+    };
+
+    // Botão Salvar
+    document.getElementById('save-phase3-btn').addEventListener('click', () => {
+        if(!projectIdInput.value) { alert("Erro: Nenhum projeto selecionado. Volte à Fase 1."); return; }
+        
+        const btn = document.getElementById('save-phase3-btn');
+        const oldText = btn.innerText;
+        btn.innerText = "Salvando...";
+        btn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('project_id', projectIdInput.value);
+        formData.append('impl_l1', fields.l1.value);
+        formData.append('impl_l2', fields.l2.value);
+        formData.append('impl_l3', fields.l3.value);
+        formData.append('impl_l4', fields.l4.value);
+        formData.append('impl_l5', fields.l5.value);
+        formData.append('impl_l6', fields.l6.value);
+
+        fetch('/api/save_project', { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(data => alert(data.message))
+            .catch(err => alert("Erro ao salvar: " + err))
+            .finally(() => { btn.innerText = oldText; btn.disabled = false; });
+    });
+
+    // Gerar Relatório
+    document.getElementById('implementation-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if(!projectIdInput.value) { alert("Selecione um projeto."); return; }
+        
+        const btn = document.getElementById('generate-report-btn');
+        btn.innerText = "Gerando...";
+        btn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('tipo_relatorio', 'fase3'); // Tipo de PDF
+        formData.append('project_id', projectIdInput.value);
+        formData.append('nome_projeto', document.getElementById('project-name-display').innerText);
+        formData.append('responsavel', hiddenResponsible.value); // Envia responsável
+        formData.append('impl_l1', fields.l1.value);
+        formData.append('impl_l2', fields.l2.value);
+        formData.append('impl_l3', fields.l3.value);
+        formData.append('impl_l4', fields.l4.value);
+        formData.append('impl_l5', fields.l5.value);
+        formData.append('impl_l6', fields.l6.value);
+
+        try {
+            const res = await fetch("/api/gerar_relatorio", { method: "POST", body: formData });
+            if(res.ok) {
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = 'Relatorio_Implementacao_TpM.pdf';
+                a.click();
+            } else { alert("Erro ao gerar PDF."); }
+        } catch(err) { alert(err); }
+        finally { btn.innerText = "Gerar Relatório de Implementação"; btn.disabled = false; }
+    });
+</script>
+{% endblock %}
